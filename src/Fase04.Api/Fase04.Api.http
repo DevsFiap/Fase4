@@ -1,0 +1,6 @@
+@Fase04.Api_HostAddress = http://localhost:5104
+
+GET {{Fase04.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

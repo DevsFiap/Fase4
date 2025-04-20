@@ -1,0 +1,32 @@
+# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+# This stage is used when running from VS in fast mode (Default for Debug configuration)
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER app
+WORKDIR /app
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://0.0.0.0:8080
+
+# This stage is used to build the service project
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+COPY ["Fase04.Api/Fase04.Api.csproj", "./Fase04.Api/"]
+COPY ["Fase04.Infra.IoC/Fase04.Infra.IoC.csproj", "./Fase04.Infra.IoC/"]
+COPY ["Fase04.Application/Fase04.Application.csproj", "./Fase04.Application/"]
+COPY ["Fase04.Domain/Fase04.Domain.csproj", "./Fase04.Domain/"]
+COPY ["Fase04.Domain.Core/Fase04.Domain.Core.csproj", "./Fase04.Domain.Core/"]
+COPY . .
+WORKDIR "/src/Fase04.Api"
+RUN dotnet build "./Fase04.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+# This stage is used to publish the service project to be copied to the final stage
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./Fase04.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "Fase04.Api.dll"]
