@@ -4,6 +4,7 @@ using Fase04.Infra.Message.Settings;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Logging.AddConsole();
+builder.Logging.AddFile("/app/logs/producer.log");
 
 builder.Services.AddMediatRConfig();
 builder.Services.AddDependencyInjection();
