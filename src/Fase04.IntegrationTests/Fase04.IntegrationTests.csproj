@@ -30,4 +30,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Fase04.Api\Fase04.Api.csproj" />
+  </ItemGroup>
+
 </Project>

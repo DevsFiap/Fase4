@@ -20,6 +20,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Fase04.Api\Fase04.Api.csproj" />
+    <ProjectReference Include="..\Fase04.Application\Fase04.Application.csproj" />
+    <ProjectReference Include="..\Fase04.Domain\Fase04.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
 
