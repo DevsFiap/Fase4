@@ -1,0 +1,86 @@
+name: .NET Core Desktop
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+
+    runs-on: ubuntu-latest  # For a list of available runner types, refer to
+                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+
+    env:
+     # Producer envs
+      Solution_Name: src/Fase04.sln  # Path to your solution (use forward slashes for Linux)
+      Test_Project_Path: src/Fase04.Tests/Fase04.Tests.csproj  # Path to your test project
+      Integration_Test_Project_Path: src/Fase04.IntegrationTests/Fase04.IntegrationTests.csproj
+    # Consumer envs
+      Consumer_Solution_Name: src-consumer/Fase04.Consumer.sln 
+      Consumer_Test_Project_Path: src-consumer/Fase04.Tests/Fase04.Tests.csproj  
+      Consumer_Integration_Test_Project_Path: src-consumer/Fase04.IntegrationTests/Fase04.IntegrationTests.csproj  # Path to your integration test project
+    
+    # Producer CI/CD
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    # Install the .NET Core workload
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    # Restore the application and all its dependencies
+    - name: Producer - Restore dependencies
+      run: dotnet restore ${{ env.Solution_Name }} 
+
+    # Build the application
+    - name: Producer - Build the application
+      run: dotnet build ${{ env.Solution_Name }} --configuration ${{ matrix.configuration }} 
+
+    # Execute all unit tests in the solution
+    - name: Producer - Execute unit tests
+      run: dotnet test ${{ env.Test_Project_Path }} 
+
+    - name: Producer - Execute Integration tests
+      run: dotnet test ${{ env.Integration_Test_Project_Path }} 
+
+    # Upload the build artifacts
+    - name: Producer - Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: artifact
+        path: dist/build/artifact/producer
+
+# Consumer CI/CD
+    # Restore the application and all its dependencies
+    - name: Consumer - Restore dependencies
+      run: dotnet restore ${{ env.Consumer_Solution_Name }} 
+
+    # Build the application
+    - name: Consumer - Build the application
+      run: dotnet build ${{ env.Consumer_Solution_Name }} --configuration ${{ matrix.configuration }} 
+
+    # Execute all unit tests in the solution
+    - name: Consumer - Execute unit tests
+      run: dotnet test ${{ env.Consumer_Test_Project_Path }} 
+
+    - name: Consumer - Execute Integration tests
+      run: dotnet test ${{ env.Consumer_Integration_Test_Project_Path }} 
+
+    # Upload the build artifacts
+    - name: Consumer - Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: artifact
+        path: dist/build/artifact/consumer
