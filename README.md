@@ -3,8 +3,7 @@
 Este projeto tem como objetivo implementar uma aplicação para gerenciamento de contatos utilizando uma arquitetura baseada em microserviços. A solução foi dividida em dois serviços independentes, um *producer* e um *consumer*, ambos desenvolvidos com .NET 8. O *producer* é uma Web API, enquanto o *consumer* é um Worker Service. A comunicação entre esses dois serviços é feita através do RabbitMQ, com o *consumer* sendo responsável por processar mensagens da fila e interagir com o banco de dados.
 
 ## Arquitetura
-
-![image](https://github.com/user-attachments/assets/5ce5eaa9-1972-4d74-b79d-678325f82b1c)
+![Arquitetura fase 4](https://github.com/user-attachments/assets/b7bf729f-563d-4049-afc4-536e901e41ef)
 
 A arquitetura do projeto é composta pelos seguintes elementos:
 
